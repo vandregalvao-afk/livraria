@@ -1,0 +1,13 @@
+name: Ping Supabase
+on:
+  schedule:
+    - cron: '0 12 * * *'
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping
+        run: |
+          curl -s -o /dev/null "https://nelhgflggucoufmkpclw.supabase.co/rest/v1/usuarios?select=id&limit=1" \
+          -H "apikey: sb_publishable_lHWy9zHvOmlFij1LgqlvWA_qPZJaRo_"
