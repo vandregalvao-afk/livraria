@@ -848,7 +848,7 @@ function filtrarAdmProd(q){renderAdmProd(q?produtos.filter(p=>p.nome.toLowerCase
 
 function renderAdmProd(lista){
   document.getElementById('lista-adm-prod').innerHTML=lista.length
-    ?lista.map(p=>`<div class="item"><div><div class="inome">${p.nome}</div><div class="isub">${[p.editora,R$(p.preco),p.estoque+' unid.'].filter(Boolean).join(' · ')}</div></div><button class="bsm" onclick="abrirEditarProd('${p.id}')">Editar</button></div>`).join('')
+    ?lista.map(p=>`<div class="item"><div><div class="inome">${p.nome}</div><div class="isub">${[p.editora,R$(p.preco),p.estoque+' unid.'].filter(Boolean).join(' · ')}</div></div><div style="display:flex;gap:6px"><button class="bsm" onclick="abrirEditarProd('${p.id}')">Editar</button><button class="bsm" style="background:var(--rp);color:var(--red)" onclick="excluirProduto('${p.id}','${p.nome.replace(/'/g,"\'").replace(/"/g,'&quot;')}')">Excluir</button></div></div>`).join('')
     :'<div class="vazio">Nenhum produto</div>';
 }
 
@@ -1110,6 +1110,20 @@ async function gerarGraficos(){
 
 function imprimirRelatorio(){
   window.print();
+}
+
+// EXCLUIR PRODUTO
+async function excluirProduto(id, nome){
+  if(!confirm('Excluir "'+nome+'"?\nEsta ação não pode ser desfeita.'))return;
+  try{
+    const itens=await GET('itens_venda?produto_id=eq.'+id+'&select=id&limit=1');
+    if(itens.length){toast('Não é possível excluir — produto tem vendas registradas.',false);return;}
+    const entradas=await GET('entradas_estoque?produto_id=eq.'+id+'&select=id&limit=1');
+    if(entradas.length){toast('Não é possível excluir — produto tem entradas registradas.',false);return;}
+    await fetch(BASE+'/produtos?id=eq.'+id,{method:'DELETE',headers:H()});
+    toast('Produto excluído!');
+    await carregarProdutos();renderEstoque(produtos);renderAdmProd(produtos);carregarInicio();
+  }catch(e){toast('Erro: '+e.message,false)}
 }
 
 // INVENTÁRIO EXCEL
