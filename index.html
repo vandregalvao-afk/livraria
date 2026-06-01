@@ -1134,6 +1134,42 @@ function imprimirRelatorio(){
   window.print();
 }
 
+// CANCELAR VENDA
+async function carregarVendasCancelar(){
+  try{
+    const sete=new Date();sete.setDate(sete.getDate()-7);sete.setHours(0,0,0,0);
+    const vendas=await GET(`vendas?created_em=gte.${sete.toISOString()}&select=id,total,doacao,created_em,forma_pagamento,nome_pagante,usuarios(nome),itens_venda(quantidade,produto_id,produtos(nome))&order=created_em.desc`);
+    const el=document.getElementById('lista-vendas-cancel');
+    if(!vendas.length){el.innerHTML='<div class="vazio">Nenhuma venda nos últimos 7 dias</div>';return}
+    el.innerHTML=vendas.map(v=>`
+      <div class="item" style="flex-direction:column;align-items:flex-start;gap:6px">
+        <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+          <div>
+            <div style="font-size:14px;font-weight:600">${R$(v.total)}${v.doacao?` <span style="font-size:12px;color:var(--am)">+💝${R$(v.doacao)}</span>`:''} · <span class="badge ${v.forma_pagamento==='pix'?'bb':'bg'}">${v.forma_pagamento==='pix'?'Pix':'Dinheiro'}</span></div>
+            <div style="font-size:12px;color:var(--tx2);margin-top:2px">${dtF(v.created_em)} · ${v.usuarios?.nome||'—'}${v.nome_pagante?' · '+v.nome_pagante:''}</div>
+          </div>
+          <button class="bsm" style="background:var(--rp);color:var(--red)" onclick="confirmarCancelarVenda('${v.id}','${R$(v.total).replace(/'/g,"\'")}')">Cancelar</button>
+        </div>
+        <div style="font-size:12px;color:var(--tx2)">${v.itens_venda?.map(i=>`${i.produtos?.nome||'?'} ×${i.quantidade}`).join(' · ')||''}</div>
+      </div>`).join('');
+  }catch(e){console.error(e)}
+}
+
+async function confirmarCancelarVenda(vid, total){
+  if(!confirm(`Cancelar venda de ${total}?\nO estoque será restaurado automaticamente.`))return;
+  try{
+    const itens=await GET(`itens_venda?venda_id=eq.${vid}&select=produto_id,quantidade`);
+    for(const item of itens){
+      const p=produtos.find(x=>x.id===item.produto_id);
+      if(p) await PATCH(`produtos?id=eq.${item.produto_id}`,{estoque:p.estoque+item.quantidade});
+    }
+    await fetch(BASE+'/itens_venda?venda_id=eq.'+vid,{method:'DELETE',headers:H()});
+    await fetch(BASE+'/vendas?id=eq.'+vid,{method:'DELETE',headers:H()});
+    toast('Venda cancelada e estoque restaurado!');
+    await carregarProdutos();renderEstoque(produtos);carregarInicio();carregarVendasCancelar();
+  }catch(e){toast('Erro: '+e.message,false)}
+}
+
 // EXCLUIR PRODUTO
 async function excluirProduto(id, nome){
   if(!confirm('Excluir "'+nome+'"?\nEsta ação não pode ser desfeita.'))return;
