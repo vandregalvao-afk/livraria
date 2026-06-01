@@ -207,8 +207,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
             </div>
           </div>
           <div class="c2"><label>Observação (opcional)</label>
-            <input type="text" id="obs-venda" placeholder="Ex: doação, desconto...">
+            <input type="text" id="obs-venda" placeholder="Ex: desconto...">
           </div>
+          <div class="c2"><label>💝 Doação (opcional)</label>
+            <input type="number" id="doacao-venda" placeholder="0,00" step="0.01" min="0" oninput="atualizarTotalComDoacao()">
+          </div>
+          <div class="tvenda" id="total-carr-final" style="font-size:16px;color:var(--tx2);display:none">Total com doação: <span id="total-com-doacao" style="color:var(--vd);font-weight:700"></span></div>
           <button class="btn-p bv" onclick="finalizarVenda()">✅ Finalizar venda</button>
           <button class="btn-p bper" onclick="limparCarrinho()">🗑️ Limpar carrinho</button>
         </div>
@@ -524,7 +528,7 @@ async function carregarInicio(){
     const hoje=new Date();
     // Ajuste para fuso Brasil (UTC-3): início do dia local em UTC
     const inicioDia=new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate(),0,0,0);
-    const vendas=await GET(`vendas?created_em=gte.${inicioDia.toISOString()}&select=total,forma_pagamento`);
+    const vendas=await GET(`vendas?created_em=gte.${inicioDia.toISOString()}&select=total,forma_pagamento,doacao`);
     const totalHoje=vendas.reduce((s,v)=>s+Number(v.total),0);
     const baixo=produtos.filter(p=>p.estoque_minimo>0&&p.estoque<=p.estoque_minimo);
     document.getElementById('s-prod').textContent=produtos.length;
@@ -535,14 +539,27 @@ async function carregarInicio(){
       document.getElementById('card-alertas').style.display='block';
       document.getElementById('lista-alertas').innerHTML=baixo.map(p=>`<div class="item"><div><div class="inome">${p.nome}</div><div class="isub">${p.editora||''}</div></div><span class="badge br">${p.estoque} unid.</span></div>`).join('');
     }else document.getElementById('card-alertas').style.display='none';
-    const ult=await GET('vendas?select=id,total,created_em,forma_pagamento,nome_pagante,usuarios(nome)&order=created_em.desc&limit=6');
+    const ult=await GET('vendas?select=id,total,doacao,created_em,forma_pagamento,nome_pagante,usuarios(nome)&order=created_em.desc&limit=6');
     document.getElementById('lista-ultimas').innerHTML=ult.length
-      ?ult.map(v=>`<div class="hist"><div class="htop"><span style="font-size:14px;font-weight:600">${R$(v.total)}</span><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="badge ${v.forma_pagamento==='pix'?'bb':'bg'}">${v.forma_pagamento==='pix'?'Pix':'Dinheiro'}</span><span class="badge bg">${v.usuarios?.nome||'—'}</span></div></div>${v.forma_pagamento==='pix'&&v.nome_pagante?`<div class="hdata">👤 ${v.nome_pagante}</div>`:''}<div class="hdata">${dtF(v.created_em)}</div></div>`).join('')
+      ?ult.map(v=>`<div class="hist"><div class="htop"><span style="font-size:14px;font-weight:600">${R$(v.total)}${v.doacao?` <span style="font-size:12px;color:var(--am)">+💝${R$(v.doacao)}</span>`:''}</span><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="badge ${v.forma_pagamento==='pix'?'bb':'bg'}">${v.forma_pagamento==='pix'?'Pix':'Dinheiro'}</span><span class="badge bg">${v.usuarios?.nome||'—'}</span></div></div>${v.forma_pagamento==='pix'&&v.nome_pagante?`<div class="hdata">👤 ${v.nome_pagante}</div>`:''}<div class="hdata">${dtF(v.created_em)}</div></div>`).join('')
       :'<div class="vazio">Nenhuma venda ainda hoje</div>';
   }catch(e){console.error(e)}
 }
 
 // VENDER
+function atualizarTotalComDoacao(){
+  const doacao=parseFloat(document.getElementById('doacao-venda').value)||0;
+  const total=carrinho.reduce((s,i)=>s+(i.precoVenda||i.preco)*i.qty,0);
+  const div=document.getElementById('total-carr-final');
+  const span=document.getElementById('total-com-doacao');
+  if(doacao>0){
+    div.style.display='block';
+    span.textContent=R$(total+doacao);
+  } else {
+    div.style.display='none';
+  }
+}
+
 function selecionarPgto(p){
   pgto=p;
   document.getElementById('btn-din').className='pgto-btn'+(p==='dinheiro'?' sel-din':'');
@@ -628,8 +645,9 @@ async function finalizarVenda(){
   const total=carrinho.reduce((s,i)=>s+(i.precoVenda||i.preco)*i.qty,0);
   const obs=document.getElementById('obs-venda').value;
   const nomePix=pgto==='pix'?document.getElementById('nome-pix').value.trim():null;
+  const doacao=parseFloat(document.getElementById('doacao-venda').value)||0;
   try{
-    const venda=await POST('vendas',{usuario_id:EU.id,total,observacao:obs||null,forma_pagamento:pgto,nome_pagante:nomePix},true);
+    const venda=await POST('vendas',{usuario_id:EU.id,total,doacao:doacao||null,observacao:obs||null,forma_pagamento:pgto,nome_pagante:nomePix},true);
     const vid=Array.isArray(venda)?venda[0].id:venda.id;
     const itens=carrinho.map(i=>({venda_id:vid,produto_id:i.id,quantidade:i.qty,preco_unitario:i.precoVenda||i.preco,subtotal:(i.precoVenda||i.preco)*i.qty}));
     await POST('itens_venda',itens);
@@ -645,6 +663,8 @@ async function finalizarVenda(){
     selecionarPgto('dinheiro');
     document.getElementById('obs-venda').value='';
     document.getElementById('nome-pix').value='';
+    document.getElementById('doacao-venda').value='';
+    document.getElementById('total-carr-final').style.display='none';
     renderCarrinho();
     await carregarProdutos();renderEstoque(produtos);carregarInicio();
   }catch(e){toast('Erro: '+e.message,false)}
@@ -698,12 +718,14 @@ function renderResumo(vendas,entradas){
   const tv=vendas.reduce((s,v)=>s+Number(v.total),0);
   const tdin=vendas.filter(v=>v.forma_pagamento==='dinheiro').reduce((s,v)=>s+Number(v.total),0);
   const tpix=vendas.filter(v=>v.forma_pagamento==='pix').reduce((s,v)=>s+Number(v.total),0);
+  const tdoa=vendas.reduce((s,v)=>s+Number(v.doacao||0),0);
   const tent=entradas.reduce((s,e)=>s+Number(e.valor_total||0),0);
   document.getElementById('tab-resumo').innerHTML=`
     <div class="card"><div class="ctit">💰 Vendas</div>
       <div class="rel-row"><span>Total de vendas</span><strong>${R$(tv)}</strong></div>
       <div class="rel-row"><span>💵 Dinheiro</span><strong>${R$(tdin)}</strong></div>
       <div class="rel-row"><span>📱 Pix</span><strong>${R$(tpix)}</strong></div>
+      <div class="rel-row"><span>💝 Doações</span><strong style="color:var(--am)">${R$(tdoa)}</strong></div>
       <div class="rel-row"><span>Nº de transações</span><strong>${vendas.length}</strong></div>
     </div>
     <div class="card"><div class="ctit">📥 Entradas (compras)</div>
