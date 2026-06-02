@@ -704,7 +704,7 @@ async function gerarRelatorios(){
   const fimUTC=new Date(fim+'T23:59:59');fimUTC.setHours(fimUTC.getHours()+3);
   try{
     const [vendas,entradas]=await Promise.all([
-      GET(`vendas?created_em=gte.${iniUTC.toISOString()}&created_em=lte.${fimUTC.toISOString()}&select=id,total,created_em,forma_pagamento,nome_pagante,observacao,usuarios(nome),itens_venda(quantidade,subtotal,produto_id,produtos(nome,editora))`),
+      GET(`vendas?created_em=gte.${iniUTC.toISOString()}&created_em=lte.${fimUTC.toISOString()}&select=id,total,doacao,created_em,forma_pagamento,nome_pagante,observacao,usuarios(nome),itens_venda(quantidade,subtotal,produto_id,produtos(nome,editora))`),
       GET(`entradas_estoque?criado_em=gte.${iniUTC.toISOString()}&criado_em=lte.${fimUTC.toISOString()}&select=*,produtos(nome,editora)`)
     ]);
     renderResumo(vendas,entradas);
@@ -725,7 +725,7 @@ function renderResumo(vendas,entradas){
       <div class="rel-row"><span>Total de vendas</span><strong>${R$(tv)}</strong></div>
       <div class="rel-row"><span>💵 Dinheiro</span><strong>${R$(tdin)}</strong></div>
       <div class="rel-row"><span>📱 Pix</span><strong>${R$(tpix)}</strong></div>
-      <div class="rel-row"><span>💝 Doações</span><strong style="color:var(--am)">${R$(tdoa)}</strong></div>
+      ${tdoa>0?`<div class="rel-row"><span>💝 Doações</span><strong style="color:var(--am)">${R$(tdoa)}</strong></div>`:''}
       <div class="rel-row"><span>Nº de transações</span><strong>${vendas.length}</strong></div>
     </div>
     <div class="card"><div class="ctit">📥 Entradas (compras)</div>
@@ -741,11 +741,11 @@ function renderResumo(vendas,entradas){
 
 function renderPix(vendas){
   const pix=vendas.filter(v=>v.forma_pagamento==='pix');
-  const tp=pix.reduce((s,v)=>s+Number(v.total),0);
+  const tp=pix.reduce((s,v)=>s+Number(v.total)+(Number(v.doacao)||0),0);
   document.getElementById('tab-pix').innerHTML=pix.length
     ?`<div class="card"><div class="ctit">📱 Pagamentos via Pix</div>
       <div style="text-align:center;padding:10px 0 14px"><div style="font-size:24px;font-weight:700;color:#1e40af">${R$(tp)}</div><div style="font-size:13px;color:var(--tx2)">${pix.length} pagamento(s)</div></div>
-      ${pix.map(v=>`<div class="rel-row"><div><div style="font-weight:500">${v.nome_pagante||'—'}</div><div style="font-size:12px;color:var(--tx2)">${dtF(v.created_em)} · ${v.usuarios?.nome||'—'}</div></div><strong>${R$(v.total)}</strong></div>`).join('')}
+      ${pix.map(v=>{const tot=Number(v.total)+(Number(v.doacao)||0);return`<div class="rel-row"><div><div style="font-weight:500">${v.nome_pagante||'—'}</div><div style="font-size:12px;color:var(--tx2)">${dtF(v.created_em)} · ${v.usuarios?.nome||'—'}${v.doacao&&v.doacao>0?' · 💝'+R$(v.doacao):''}</div></div><strong>${R$(tot)}</strong></div>`;}).join('')}
       </div>`
     :'<div class="card"><div class="vazio">Nenhum pagamento Pix no período</div></div>';
 }
@@ -989,9 +989,11 @@ carregarUsuarios();
     <div style="font-size:12px;color:var(--tx2);margin-bottom:16px" id="mp-estoque"></div>
     <div class="c2">
       <label>Preço de venda (R$) *</label>
-      <input type="number" id="mp-preco" step="0.01" min="0.01" placeholder="0,00"
+      <input type="number" id="mp-preco" step="0.01" min="0" placeholder="Digite o preço"
         onkeydown="if(event.key==='Enter')confirmarAddCarrinho()"
+        onfocus="this.select()"
         style="font-size:20px;font-weight:700;text-align:center;color:var(--vd)">
+      <div style="font-size:12px;color:var(--tx2);margin-top:6px;text-align:center">Apague e digite o novo valor se precisar alterar</div>
     </div>
     <div class="mac">
       <button style="background:var(--bor);color:var(--tx2)" onclick="fecharModal('modal-preco')">Cancelar</button>
