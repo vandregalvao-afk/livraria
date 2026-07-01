@@ -213,7 +213,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
             <input type="number" id="doacao-venda" placeholder="0,00" step="0.01" min="0" oninput="atualizarTotalComDoacao()">
           </div>
           <div class="tvenda" id="total-carr-final" style="font-size:16px;color:var(--tx2);display:none">Total com doação: <span id="total-com-doacao" style="color:var(--vd);font-weight:700"></span></div>
-          <button class="btn-p bv" onclick="finalizarVenda()">✅ Finalizar venda</button>
+          <button class="btn-p bv" id="btn-finalizar" onclick="finalizarVenda()">✅ Finalizar venda</button>
           <button class="btn-p bper" onclick="limparCarrinho()">🗑️ Limpar carrinho</button>
         </div>
       </div>
@@ -227,6 +227,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <input type="text" id="busca-estq" placeholder="Buscar por nome, autor ou editora..." oninput="filtrarEstoque(this.value)">
       </div>
       <div class="card"><div id="lista-estq"><div class="loading">Carregando...</div></div></div>
+    </div>
+
+    <!-- ENCOMENDAS -->
+    <div class="tela" id="tela-encomendas">
+      <div class="stit">Encomendas</div>
+      <div class="card">
+        <div class="ctit">➕ Nova encomenda</div>
+        <div class="c2"><label>Cliente *</label><input type="text" id="enc-cliente" placeholder="Nome do cliente"></div>
+        <div class="c2"><label>Livro *</label><input type="text" id="enc-livro" placeholder="Título desejado"></div>
+        <div class="c2"><label>Telefone</label><input type="text" id="enc-telefone" placeholder="(00) 00000-0000"></div>
+        <div class="c2"><label>Observação</label><input type="text" id="enc-obs" placeholder="Ex: editora específica, urgência..."></div>
+        <button class="btn-p bv" onclick="salvarEncomenda()">💾 Registrar encomenda</button>
+      </div>
+      <div class="tabs">
+        <button class="tab ativo" onclick="mudarTabEnc(this,'pendente')">⏳ Pendentes</button>
+        <button class="tab" onclick="mudarTabEnc(this,'atendida')">✅ Atendidas</button>
+      </div>
+      <div class="card">
+        <div id="lista-encomendas"><div class="loading">Carregando...</div></div>
+      </div>
     </div>
 
     <!-- RELATÓRIOS -->
@@ -306,6 +326,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <button class="btn-p bam" onclick="registrarEntrada()">📦 Registrar entrada</button>
       </div>
 
+      <!-- DOAÇÃO DE LIVROS -->
+      <div class="card">
+        <div class="ctit">🎁 Doação de livros</div>
+        <p style="font-size:13px;color:var(--tx2);margin-bottom:12px">Baixa de estoque sem venda — para eventos, bazares e doações institucionais.</p>
+        <div class="c2"><label>Produto *</label><select id="doa-prod"><option value="">Selecione...</option></select></div>
+        <div class="c2"><label>Quantidade *</label><input type="number" id="doa-qty" placeholder="0" min="1"></div>
+        <div class="c2"><label>Destino *</label><input type="text" id="doa-destino" placeholder="Ex: Bazar beneficente, Evento X..."></div>
+        <div class="c2"><label>Observação</label><input type="text" id="doa-obs" placeholder="Opcional"></div>
+        <button class="btn-p" style="background:#a855f7;color:#fff" onclick="registrarDoacaoLivro()">🎁 Registrar doação</button>
+      </div>
+
       <!-- USUÁRIOS -->
       <!-- CANCELAR VENDA -->
       <div class="card">
@@ -371,6 +402,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <button class="nb ativo" id="nb-inicio" onclick="ir('inicio')"><span>🏠</span>Início</button>
     <button class="nb" id="nb-vender" onclick="ir('vender')"><span>🛒</span>Vender</button>
     <button class="nb" id="nb-estoque" onclick="ir('estoque')"><span>📦</span>Estoque</button>
+    <button class="nb" id="nb-encomendas" onclick="ir('encomendas')"><span>📋</span>Encomendas</button>
     <button class="nb" id="nb-relatorios" onclick="ir('relatorios')"><span>📊</span>Relatórios</button>
     <button class="nb" id="nb-graficos" onclick="ir('graficos')" style="display:none"><span>📈</span>Diretoria</button>
     <button class="nb" id="nb-admin" onclick="ir('admin')" style="display:none"><span>⚙️</span>Admin</button>
@@ -514,6 +546,7 @@ async function iniciar(){
   await carregarProdutos();
   carregarInicio();
   renderEstoque(produtos);
+  carregarEncomendas();
   if(EU.perfil==='admin')iniciarAdmin();
 }
 
@@ -642,6 +675,9 @@ function renderCarrinho(){
 async function finalizarVenda(){
   if(!carrinho.length)return;
   if(pgto==='pix'&&!document.getElementById('nome-pix').value.trim()){toast('Informe o nome do pagante (Pix)',false);return}
+  const btnFin=document.getElementById('btn-finalizar');
+  if(btnFin&&btnFin.disabled)return;
+  if(btnFin){btnFin.disabled=true;btnFin.textContent='⏳ Processando...';}
   const total=carrinho.reduce((s,i)=>s+(i.precoVenda||i.preco)*i.qty,0);
   const obs=document.getElementById('obs-venda').value;
   const nomePix=pgto==='pix'?document.getElementById('nome-pix').value.trim():null;
@@ -667,7 +703,13 @@ async function finalizarVenda(){
     document.getElementById('total-carr-final').style.display='none';
     renderCarrinho();
     await carregarProdutos();renderEstoque(produtos);carregarInicio();
-  }catch(e){toast('Erro: '+e.message,false)}
+    const btnFin=document.getElementById('btn-finalizar');
+    if(btnFin){btnFin.disabled=false;btnFin.textContent='✅ Finalizar venda';}
+  }catch(e){
+    toast('Erro: '+e.message,false);
+    const btnFin=document.getElementById('btn-finalizar');
+    if(btnFin){btnFin.disabled=false;btnFin.textContent='✅ Finalizar venda';}
+  }
 }
 
 // ESTOQUE
@@ -831,6 +873,7 @@ function preencherSelectEntrada(){
   const sel=document.getElementById('ent-prod');if(!sel)return;
   sel.innerHTML='<option value="">Selecione o produto...</option>';
   produtos.forEach(p=>sel.innerHTML+=`<option value="${p.id}">${p.nome}${p.editora?' ('+p.editora+')':''} — ${p.estoque} unid.</option>`);
+  preencherSelectDoacao();
 }
 
 async function registrarEntrada(){
@@ -1169,6 +1212,91 @@ async function confirmarCancelarVenda(vid, total){
     await fetch(BASE+'/vendas?id=eq.'+vid,{method:'DELETE',headers:H()});
     toast('Venda cancelada e estoque restaurado!');
     await carregarProdutos();renderEstoque(produtos);carregarInicio();carregarVendasCancelar();
+  }catch(e){toast('Erro: '+e.message,false)}
+}
+
+// ENCOMENDAS
+let tabEncAtiva='pendente';
+
+async function salvarEncomenda(){
+  const cliente=document.getElementById('enc-cliente').value.trim();
+  const livro=document.getElementById('enc-livro').value.trim();
+  const telefone=document.getElementById('enc-telefone').value.trim();
+  const obs=document.getElementById('enc-obs').value.trim();
+  if(!cliente||!livro){toast('Preencha cliente e livro',false);return}
+  try{
+    await POST('encomendas',{cliente,livro,telefone:telefone||null,observacao:obs||null,usuario_id:EU.id,status:'pendente'});
+    toast('Encomenda registrada!');
+    ['enc-cliente','enc-livro','enc-telefone','enc-obs'].forEach(id=>document.getElementById(id).value='');
+    carregarEncomendas();
+  }catch(e){toast('Erro: '+e.message,false)}
+}
+
+function mudarTabEnc(btn,status){
+  tabEncAtiva=status;
+  document.querySelectorAll('#tela-encomendas .tab').forEach(x=>x.classList.remove('ativo'));
+  btn.classList.add('ativo');
+  carregarEncomendas();
+}
+
+async function carregarEncomendas(){
+  try{
+    const lista=await GET(`encomendas?status=eq.${tabEncAtiva}&select=*,usuarios(nome)&order=criado_em.desc`);
+    const el=document.getElementById('lista-encomendas');
+    if(!lista.length){el.innerHTML='<div class="vazio">Nenhuma encomenda '+(tabEncAtiva==='pendente'?'pendente':'atendida')+'</div>';return}
+    const podeGerenciar=EU.perfil==='admin'||EU.nome==='Déia';
+    el.innerHTML=lista.map(e=>`
+      <div class="item" style="flex-direction:column;align-items:flex-start;gap:6px">
+        <div style="display:flex;justify-content:space-between;width:100%;align-items:flex-start">
+          <div>
+            <div class="inome">${e.livro}</div>
+            <div class="isub">👤 ${e.cliente}${e.telefone?' · 📞 '+e.telefone:''}</div>
+            <div class="isub">${dtF(e.criado_em)} · ${e.usuarios?.nome||'—'}</div>
+            ${e.observacao?`<div class="isub" style="font-style:italic">${e.observacao}</div>`:''}
+          </div>
+          ${podeGerenciar?`<div style="display:flex;flex-direction:column;gap:6px">
+            ${tabEncAtiva==='pendente'?`<button class="bsm-v" onclick="marcarAtendida('${e.id}')">✅ Atendida</button>`:''}
+            <button class="bsm" style="background:var(--rp);color:var(--red)" onclick="excluirEncomenda('${e.id}')">Excluir</button>
+          </div>`:''}
+        </div>
+      </div>`).join('');
+  }catch(e){console.error(e)}
+}
+
+async function marcarAtendida(id){
+  await PATCH(`encomendas?id=eq.${id}`,{status:'atendida',atendido_em:new Date().toISOString()});
+  toast('Encomenda marcada como atendida!');
+  carregarEncomendas();
+}
+
+async function excluirEncomenda(id){
+  if(!confirm('Excluir esta encomenda?'))return;
+  await fetch(BASE+'/encomendas?id=eq.'+id,{method:'DELETE',headers:H()});
+  toast('Encomenda excluída!');
+  carregarEncomendas();
+}
+
+// DOAÇÃO DE LIVROS
+function preencherSelectDoacao(){
+  const sel=document.getElementById('doa-prod');if(!sel)return;
+  sel.innerHTML='<option value="">Selecione o produto...</option>';
+  produtos.forEach(p=>sel.innerHTML+=`<option value="${p.id}">${p.nome}${p.editora?' ('+p.editora+')':''} — ${p.estoque} unid.</option>`);
+}
+
+async function registrarDoacaoLivro(){
+  const pid=document.getElementById('doa-prod').value;
+  const qty=parseInt(document.getElementById('doa-qty').value);
+  const destino=document.getElementById('doa-destino').value.trim();
+  const obs=document.getElementById('doa-obs').value.trim();
+  if(!pid||!qty||qty<=0){toast('Selecione produto e quantidade',false);return}
+  if(!destino){toast('Informe o destino da doação',false);return}
+  const p=produtos.find(x=>x.id===pid);
+  try{
+    await POST('saidas_doacao',{produto_id:pid,quantidade:qty,destino,observacao:obs||null,usuario_id:EU.id});
+    await PATCH(`produtos?id=eq.${pid}`,{estoque:p.estoque-qty});
+    toast(`Doação registrada: ${qty} unidade(s) de "${p.nome}"`);
+    ['doa-prod','doa-qty','doa-destino','doa-obs'].forEach(id=>document.getElementById(id).value='');
+    await carregarProdutos();renderEstoque(produtos);carregarInicio();
   }catch(e){toast('Erro: '+e.message,false)}
 }
 
