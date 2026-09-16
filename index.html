@@ -109,11 +109,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .toast.show{opacity:1}
 .divider{height:1px;background:var(--bor);margin:12px 0}
 .info-box{background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:10px 12px;font-size:13px;color:#0369a1;margin-bottom:12px}
+.item-import{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bor);font-size:13px}
+.item-import:last-child{border-bottom:none}
+.item-import input[type=checkbox]{width:18px;height:18px;cursor:pointer}
+.chip{display:inline-block;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;margin-left:4px}
+.chip-novo{background:var(--vp);color:var(--vd)}
+.chip-dup{background:#fef3c7;color:#92400e}
 </style>
 
 <style>
 @media print {
-  .nav, .topbar, .btn-p, .btn-sair, .bout, .bsm, .bsm-v, .busca, .campo2, .c2, 
+  .nav, .topbar, .btn-p, .btn-sair, .bout, .bsm, .bsm-v, .busca, .campo2, .c2,
   #card-alertas, button { display: none !important; }
   .cont { padding: 0 !important; padding-bottom: 0 !important; }
   .card { box-shadow: none !important; border: 1px solid #ddd; }
@@ -127,8 +133,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Livraria André Luiz">
 <meta name="theme-color" content="#1b4332">
-<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjgwIiBmaWxsPSIjMWI0MzMyIi8+CiAgPHJlY3QgeD0iMTAwIiB5PSIxMjAiIHdpZHRoPSIxNDAiIGhlaWdodD0iMjgwIiByeD0iMTIiIGZpbGw9IiM0MDkxNmMiLz4KICA8cmVjdCB4PSIxMTAiIHk9IjEzMCIgd2lkdGg9IjEyMCIgaGVpZ2h0PSIyNjAiIHJ4PSI4IiBmaWxsPSIjZDhmM2RjIi8+CiAgPHJlY3QgeD0iMTI1IiB5PSIxNjAiIHdpZHRoPSI5MCIgaGVpZ2h0PSI4IiByeD0iNCIgZmlsbD0iIzJkNmE0ZiIvPgogIDxyZWN0IHg9IjEyNSIgeT0iMTg1IiB3aWR0aD0iNzUiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiM1MmI3ODgiLz4KICA8cmVjdCB4PSIxMjUiIHk9IjIwNSIgd2lkdGg9IjgwIiBoZWlnaHQ9IjYiIHJ4PSIzIiBmaWxsPSIjNTJiNzg4Ii8+CiAgPHJlY3QgeD0iMTI1IiB5PSIyMjUiIHdpZHRoPSI2NSIgaGVpZ2h0PSI2IiByeD0iMyIgZmlsbD0iIzUyYjc4OCIvPgogIDxyZWN0IHg9IjI3MCIgeT0iMTAwIiB3aWR0aD0iMTQwIiBoZWlnaHQ9IjI5MCIgcng9IjEyIiBmaWxsPSIjMmQ2YTRmIi8+CiAgPHJlY3QgeD0iMjgwIiB5PSIxMTAiIHdpZHRoPSIxMjAiIGhlaWdodD0iMjcwIiByeD0iOCIgZmlsbD0iI2YwZmRmNCIvPgogIDxyZWN0IHg9IjI5NSIgeT0iMTQ1IiB3aWR0aD0iOTAiIGhlaWdodD0iMTAiIHJ4PSI1IiBmaWxsPSIjMWI0MzMyIi8+CiAgPHJlY3QgeD0iMjk1IiB5PSIxNzAiIHdpZHRoPSI3NSIgaGVpZ2h0PSI3IiByeD0iMyIgZmlsbD0iIzQwOTE2YyIvPgogIDxyZWN0IHg9IjI5NSIgeT0iMTkyIiB3aWR0aD0iODIiIGhlaWdodD0iNyIgcng9IjMiIGZpbGw9IiM0MDkxNmMiLz4KICA8cmVjdCB4PSIyOTUiIHk9IjIxNCIgd2lkdGg9IjY4IiBoZWlnaHQ9IjciIHJ4PSIzIiBmaWxsPSIjNDA5MTZjIi8+CiAgPHJlY3QgeD0iMjk1IiB5PSIyMzYiIHdpZHRoPSI3OCIgaGVpZ2h0PSI3IiByeD0iMyIgZmlsbD0iIzQwOTE2YyIvPgogIDxyZWN0IHg9Ijg1IiB5PSIzOTAiIHdpZHRoPSIzNDAiIGhlaWdodD0iMTgiIHJ4PSI5IiBmaWxsPSIjNDA5MTZjIiBvcGFjaXR5PSIwLjYiLz4KPC9zdmc+">
-<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjgwIiBmaWxsPSIjMWI0MzMyIi8+CiAgPHJlY3QgeD0iMTAwIiB5PSIxMjAiIHdpZHRoPSIxNDAiIGhlaWdodD0iMjgwIiByeD0iMTIiIGZpbGw9IiM0MDkxNmMiLz4KICA8cmVjdCB4PSIxMTAiIHk9IjEzMCIgd2lkdGg9IjEyMCIgaGVpZ2h0PSIyNjAiIHJ4PSI4IiBmaWxsPSIjZDhmM2RjIi8+CiAgPHJlY3QgeD0iMTI1IiB5PSIxNjAiIHdpZHRoPSI5MCIgaGVpZ2h0PSI4IiByeD0iNCIgZmlsbD0iIzJkNmE0ZiIvPgogIDxyZWN0IHg9IjEyNSIgeT0iMTg1IiB3aWR0aD0iNzUiIGhlaWdodD0iNiIgcng9IjMiIGZpbGw9IiM1MmI3ODgiLz4KICA8cmVjdCB4PSIxMjUiIHk9IjIwNSIgd2lkdGg9IjgwIiBoZWlnaHQ9IjYiIHJ4PSIzIiBmaWxsPSIjNTJiNzg4Ii8+CiAgPHJlY3QgeD0iMTI1IiB5PSIyMjUiIHdpZHRoPSI2NSIgaGVpZ2h0PSI2IiByeD0iMyIgZmlsbD0iIzUyYjc4OCIvPgogIDxyZWN0IHg9IjI3MCIgeT0iMTAwIiB3aWR0aD0iMTQwIiBoZWlnaHQ9IjI5MCIgcng9IjEyIiBmaWxsPSIjMmQ2YTRmIi8+CiAgPHJlY3QgeD0iMjgwIiB5PSIxMTAiIHdpZHRoPSIxMjAiIGhlaWdodD0iMjcwIiByeD0iOCIgZmlsbD0iI2YwZmRmNCIvPgogIDxyZWN0IHg9IjI5NSIgeT0iMTQ1IiB3aWR0aD0iOTAiIGhlaWdodD0iMTAiIHJ4PSI1IiBmaWxsPSIjMWI0MzMyIi8+CiAgPHJlY3QgeD0iMjk1IiB5PSIxNzAiIHdpZHRoPSI3NSIgaGVpZ2h0PSI3IiByeD0iMyIgZmlsbD0iIzQwOTE2YyIvPgogIDxyZWN0IHg9IjI5NSIgeT0iMTkyIiB3aWR0aD0iODIiIGhlaWdodD0iNyIgcng9IjMiIGZpbGw9IiM0MDkxNmMiLz4KICA8cmVjdCB4PSIyOTUiIHk9IjIxNCIgd2lkdGg9IjY4IiBoZWlnaHQ9IjciIHJ4PSIzIiBmaWxsPSIjNDA5MTZjIi8+CiAgPHJlY3QgeD0iMjk1IiB5PSIyMzYiIHdpZHRoPSI3OCIgaGVpZ2h0PSI3IiByeD0iMyIgZmlsbD0iIzQwOTE2YyIvPgogIDxyZWN0IHg9Ijg1IiB5PSIzOTAiIHdpZHRoPSIzNDAiIGhlaWdodD0iMTgiIHJ4PSI5IiBmaWxsPSIjNDA5MTZjIiBvcGFjaXR5PSIwLjYiLz4KPC9zdmc+">
 </head>
 <body>
 <div class="toast" id="toast"></div>
@@ -278,7 +282,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <!-- IMPORTAR EXCEL -->
       <div class="card">
         <div class="ctit">📥 Importar estoque (Excel)</div>
-        <div class="info-box">Colunas esperadas: <strong>nome, editora, autor, categoria, preco, estoque, estoque_minimo</strong><br>Títulos com mesmo nome + editora serão ignorados (não duplica).</div>
+        <div class="info-box">Colunas esperadas: <strong>nome, editora, autor, categoria, preco, estoque, estoque_minimo</strong><br>Duplicatas (mesmo nome+editora) aparecem marcadas — você escolhe se soma ao estoque ou ignora.</div>
         <div class="import-area" onclick="document.getElementById('inp-excel').click()">
           <input type="file" id="inp-excel" accept=".xlsx,.xls,.csv" onchange="lerExcel(this)">
           <div class="import-ico">📂</div>
@@ -337,12 +341,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <button class="btn-p" style="background:#a855f7;color:#fff" onclick="registrarDoacaoLivro()">🎁 Registrar doação</button>
       </div>
 
-      <!-- USUÁRIOS -->
       <!-- CANCELAR VENDA -->
       <div class="card">
         <div class="ctit">🗑️ Cancelar venda</div>
         <p style="font-size:13px;color:var(--tx2);margin-bottom:12px">Vendas dos últimos 7 dias. Cancelar restaura o estoque automaticamente.</p>
         <div id="lista-vendas-cancel"><div class="loading">Carregando...</div></div>
+      </div>
+
+      <!-- ESTORNAR ENTRADA -->
+      <div class="card">
+        <div class="ctit">↩️ Estornar entrada de estoque</div>
+        <p style="font-size:13px;color:var(--tx2);margin-bottom:12px">Últimas 30 entradas. Estornar apaga o registro e desconta a quantidade do estoque.</p>
+        <div id="lista-entradas-cancel"><div class="loading">Carregando...</div></div>
       </div>
 
       <div class="card">
@@ -351,25 +361,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <button class="bout" style="width:100%;margin-top:12px" onclick="abrirModalUser()">+ Novo usuário</button>
       </div>
 
-      <!-- GERENCIAR PRODUTOS -->
+      <!-- INVENTÁRIO -->
       <div class="card">
         <div class="ctit">📋 Inventário</div>
         <p style="font-size:13px;color:var(--tx2);margin-bottom:12px">Exporta planilha com estoque atual + coluna em branco para contagem física.</p>
         <button class="btn-p bv" onclick="exportarInventario()" style="margin-top:0">📥 Exportar Inventário (Excel)</button>
-      </div>
-      <!-- AJUSTE DE INVENTÁRIO -->
-      <div class="card">
-        <div class="ctit">📋 Ajuste de inventário</div>
-        <p style="font-size:13px;color:var(--tx2);margin-bottom:12px">Importe a planilha de inventário com a coluna <strong>Contagem Física</strong> preenchida. O sistema atualiza o estoque automaticamente.</p>
-        <div class="import-area" onclick="document.getElementById('inp-inventario').click()">
-          <input type="file" id="inp-inventario" accept=".xlsx,.xls" onchange="lerAjusteInventario(this)">
-          <div class="import-ico">📂</div>
-          <div class="import-txt">Toque para selecionar a planilha preenchida</div>
-        </div>
-        <div id="preview-inventario"></div>
-        <div id="btn-ajuste" style="display:none">
-          <button class="btn-p bam" onclick="aplicarAjusteInventario()">⚖️ Aplicar ajuste de estoque</button>
-        </div>
       </div>
 
       <div class="card">
@@ -379,6 +375,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           <input type="text" id="busca-adm" placeholder="Buscar..." oninput="filtrarAdmProd(this.value)">
         </div>
         <div id="lista-adm-prod"><div class="loading">Carregando...</div></div>
+      </div>
+
+      <!-- PRODUTOS ARQUIVADOS -->
+      <div class="card">
+        <div class="ctit">🗄️ Produtos arquivados</div>
+        <p style="font-size:13px;color:var(--tx2);margin-bottom:12px">Produtos que não podem ser excluídos por terem histórico. Reative se voltar a vender.</p>
+        <div id="lista-arquivados"><div class="loading">Carregando...</div></div>
       </div>
     </div>
 
@@ -464,6 +467,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <script>
 const BASE='https://nelhgflggucoufmkpclw.supabase.co/rest/v1';
+const RPC='https://nelhgflggucoufmkpclw.supabase.co/rest/v1/rpc';
 const KEY='sb_publishable_lHWy9zHvOmlFij1LgqlvWA_qPZJaRo_';
 let EU=null,carrinho=[],produtos=[],pgto='dinheiro',tabAtiva='resumo',excelPreview=[];
 
@@ -479,6 +483,17 @@ async function POST(p,d,ret=false){
   return JSON.parse(txt);
 }
 async function PATCH(p,d){const r=await fetch(BASE+'/'+p,{method:'PATCH',headers:H(),body:JSON.stringify(d)});if(!r.ok){let m='Erro '+r.status;try{const j=await r.json();m=j.message||j.hint||m}catch(e){}throw new Error(m)}}
+async function CALL_RPC(name,args){
+  const r=await fetch(RPC+'/'+name,{method:'POST',headers:H(),body:JSON.stringify(args||{})});
+  if(!r.ok){let m='Erro '+r.status;try{const j=await r.json();m=j.message||j.hint||m}catch(e){}throw new Error(m)}
+  const txt=await r.text();if(!txt)return null;return JSON.parse(txt);
+}
+
+// Normaliza texto para comparação: sem acentos, minúsculo, espaços colapsados
+function normalizar(s){
+  if(!s)return'';
+  return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+}
 
 function R$(v){return'R$ '+Number(v).toFixed(2).replace('.',',')}
 function dtF(d){return new Date(d).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}
@@ -539,7 +554,6 @@ async function iniciar(){
   const hoje=new Date(),ini=new Date(hoje.getFullYear(),hoje.getMonth(),1);
   document.getElementById('rel-ini').value=ini.toISOString().split('T')[0];
   document.getElementById('rel-fim').value=hoje.toISOString().split('T')[0];
-  // Datas padrão gráficos: último ano
   const anoIni=new Date(hoje.getFullYear()-1,hoje.getMonth()+1,1);
   document.getElementById('g-ini').value=anoIni.toISOString().split('T')[0];
   document.getElementById('g-fim').value=hoje.toISOString().split('T')[0];
@@ -551,7 +565,8 @@ async function iniciar(){
 }
 
 async function carregarProdutos(){
-  produtos=await GET('produtos?select=*&order=nome');
+  // Só produtos ativos (arquivados não aparecem em venda/estoque)
+  produtos=await GET('produtos?select=*&ativo=eq.true&order=nome');
   preencherSelectEntrada();
 }
 
@@ -559,7 +574,6 @@ async function carregarProdutos(){
 async function carregarInicio(){
   try{
     const hoje=new Date();
-    // Ajuste para fuso Brasil (UTC-3): início do dia local em UTC
     const inicioDia=new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate(),0,0,0);
     const vendas=await GET(`vendas?created_em=gte.${inicioDia.toISOString()}&select=total,forma_pagamento,doacao`);
     const totalHoje=vendas.reduce((s,v)=>s+Number(v.total),0);
@@ -585,12 +599,8 @@ function atualizarTotalComDoacao(){
   const total=carrinho.reduce((s,i)=>s+(i.precoVenda||i.preco)*i.qty,0);
   const div=document.getElementById('total-carr-final');
   const span=document.getElementById('total-com-doacao');
-  if(doacao>0){
-    div.style.display='block';
-    span.textContent=R$(total+doacao);
-  } else {
-    div.style.display='none';
-  }
+  if(doacao>0){div.style.display='block';span.textContent=R$(total+doacao);}
+  else{div.style.display='none';}
 }
 
 function selecionarPgto(p){
@@ -617,9 +627,7 @@ function buscarVenda(q){
 
 function addCarrinho(id){
   const p=produtos.find(x=>x.id===id);if(!p)return;
-  // Avisa mas não bloqueia se estoque zerado/negativo
   if(p.estoque<=0){toast('⚠️ Atenção: estoque zerado ou negativo!',false)}
-  // Abre modal para confirmar/ajustar preço
   document.getElementById('mp-id').value=id;
   document.getElementById('mp-nome').textContent=p.nome+(p.editora?' ('+p.editora+')':'');
   document.getElementById('mp-preco').value=p.preco>0?p.preco.toFixed(2):'';
@@ -634,12 +642,7 @@ function confirmarAddCarrinho(){
   if(!precoDigitado||precoDigitado<=0){toast('Informe o preço de venda',false);return}
   const p=produtos.find(x=>x.id===id);if(!p)return;
   const ex=carrinho.find(x=>x.id===id&&x.precoVenda===precoDigitado);
-  if(ex){
-    ex.qty++;
-  } else {
-    // Permite mesmo produto com preços diferentes (PEPS)
-    carrinho.push({...p,qty:1,precoVenda:precoDigitado});
-  }
+  if(ex){ex.qty++;}else{carrinho.push({...p,qty:1,precoVenda:precoDigitado});}
   fecharModal('modal-preco');
   document.getElementById('busca-venda').value='';
   document.getElementById('res-busca').innerHTML='';
@@ -649,12 +652,8 @@ function confirmarAddCarrinho(){
 function changeQty(idx,d){
   if(idx<0||idx>=carrinho.length)return;
   const item=carrinho[idx];
-  const p=produtos.find(x=>x.id===item.id);
-  // Soma total no carrinho deste produto (pode ter mesmo produto com preços diferentes)
-  const totalNoCarrinho=carrinho.filter(x=>x.id===item.id).reduce((s,x)=>s+x.qty,0);
   item.qty+=d;
   if(item.qty<=0)carrinho.splice(idx,1);
-  // Sem bloqueio de estoque — permite venda mesmo com estoque zerado
   renderCarrinho();
 }
 
@@ -687,7 +686,6 @@ async function finalizarVenda(){
     const vid=Array.isArray(venda)?venda[0].id:venda.id;
     const itens=carrinho.map(i=>({venda_id:vid,produto_id:i.id,quantidade:i.qty,preco_unitario:i.precoVenda||i.preco,subtotal:(i.precoVenda||i.preco)*i.qty}));
     await POST('itens_venda',itens);
-    // Agrupar itens por produto para atualizar estoque corretamente
     const porProduto={};
     carrinho.forEach(item=>{porProduto[item.id]=(porProduto[item.id]||0)+item.qty});
     for(const [pid,qty] of Object.entries(porProduto)){
@@ -703,11 +701,9 @@ async function finalizarVenda(){
     document.getElementById('total-carr-final').style.display='none';
     renderCarrinho();
     await carregarProdutos();renderEstoque(produtos);carregarInicio();
-    const btnFin=document.getElementById('btn-finalizar');
     if(btnFin){btnFin.disabled=false;btnFin.textContent='✅ Finalizar venda';}
   }catch(e){
     toast('Erro: '+e.message,false);
-    const btnFin=document.getElementById('btn-finalizar');
     if(btnFin){btnFin.disabled=false;btnFin.textContent='✅ Finalizar venda';}
   }
 }
@@ -732,7 +728,7 @@ function renderEstoque(lista){
 // RELATÓRIOS
 function mudarTab(btn,t){
   tabAtiva=t;
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('ativo'));
+  document.querySelectorAll('#tela-relatorios .tab').forEach(x=>x.classList.remove('ativo'));
   btn.classList.add('ativo');
   ['resumo','pix','produtos','entradas'].forEach(x=>document.getElementById('tab-'+x).style.display=x===t?'block':'none');
 }
@@ -740,8 +736,6 @@ function mudarTab(btn,t){
 async function gerarRelatorios(){
   const ini=document.getElementById('rel-ini').value,fim=document.getElementById('rel-fim').value;
   if(!ini||!fim){toast('Selecione as datas',false);return}
-  const fimDt=new Date(fim);fimDt.setHours(23,59,59,999);
-  // Ajuste fuso Brasil UTC-3: soma 3h para converter horário local para UTC
   const iniUTC=new Date(ini+'T00:00:00');iniUTC.setHours(iniUTC.getHours()+3);
   const fimUTC=new Date(fim+'T23:59:59');fimUTC.setHours(fimUTC.getHours()+3);
   try{
@@ -813,7 +807,7 @@ function renderEntradas(entradas){
 
 // ADMIN
 async function iniciarAdmin(){
-  await Promise.all([carregarUsersAdmin(),renderAdmProd(produtos),carregarVendasCancelar()]);
+  await Promise.all([carregarUsersAdmin(),renderAdmProd(produtos),carregarVendasCancelar(),carregarEntradasCancelar(),carregarArquivados()]);
 }
 
 async function carregarUsersAdmin(){
@@ -887,9 +881,10 @@ async function registrarEntrada(){
   await PATCH(`produtos?id=eq.${pid}`,{estoque:p.estoque+qty});
   toast(`+${qty} unidades registradas!`);
   ['ent-prod','ent-qty','ent-val','ent-obs'].forEach(id=>document.getElementById(id).value='');
-  await carregarProdutos();renderEstoque(produtos);carregarInicio();
+  await carregarProdutos();renderEstoque(produtos);carregarInicio();carregarEntradasCancelar();
 }
 
+// CADASTRAR PRODUTO (com trava anti-duplicidade normalizada)
 async function cadastrarProduto(){
   const nome=document.getElementById('p-nome').value.trim();
   const editora=document.getElementById('p-editora').value.trim();
@@ -899,9 +894,24 @@ async function cadastrarProduto(){
   const estoque=parseInt(document.getElementById('p-estq').value)||0;
   const estoque_minimo=parseInt(document.getElementById('p-min').value)||0;
   if(!nome||isNaN(preco)||preco<0){toast('Preencha nome e preço',false);return}
-  // Verificar duplicata
-  const dup=produtos.find(p=>p.nome.toLowerCase()===nome.toLowerCase()&&(p.editora||'').toLowerCase()===(editora||'').toLowerCase());
-  if(dup){toast('Já existe um produto com esse nome e editora!',false);return}
+  // Verifica duplicata normalizada (ignora acento, caixa, espaços)
+  const nNome=normalizar(nome), nEd=normalizar(editora);
+  const dup=produtos.find(p=>normalizar(p.nome)===nNome && normalizar(p.editora||'')===nEd);
+  if(dup){
+    alert(`Já existe um produto cadastrado com esse nome e editora:\n\n"${dup.nome}"${dup.editora?' ('+dup.editora+')':''}\nEstoque atual: ${dup.estoque} unid. · ${R$(dup.preco)}\n\nUse "Entrada de estoque" para somar ao existente, ou mude a editora/nome para diferenciar.`);
+    return;
+  }
+  // Também procura em produtos arquivados
+  const arq=await GET(`produtos?ativo=eq.false&select=id,nome,editora`);
+  const dupArq=arq.find(p=>normalizar(p.nome)===nNome && normalizar(p.editora||'')===nEd);
+  if(dupArq){
+    if(confirm(`Existe um produto ARQUIVADO com esse nome:\n"${dupArq.nome}"${dupArq.editora?' ('+dupArq.editora+')':''}\n\nDeseja reativá-lo em vez de criar novo?`)){
+      await CALL_RPC('reativar_produto',{p_produto_id:dupArq.id});
+      toast('Produto reativado!');
+      await carregarProdutos();renderEstoque(produtos);renderAdmProd(produtos);carregarArquivados();
+      return;
+    }
+  }
   await POST('produtos',{nome,editora:editora||null,autor:autor||null,categoria:cat||null,preco,estoque,estoque_minimo});
   toast('Produto cadastrado!');
   ['p-nome','p-editora','p-autor','p-preco','p-estq','p-min'].forEach(id=>document.getElementById(id).value='');
@@ -913,7 +923,7 @@ function filtrarAdmProd(q){renderAdmProd(q?produtos.filter(p=>p.nome.toLowerCase
 
 function renderAdmProd(lista){
   document.getElementById('lista-adm-prod').innerHTML=lista.length
-    ?lista.map(p=>`<div class="item"><div><div class="inome">${p.nome}</div><div class="isub">${[p.editora,R$(p.preco),p.estoque+' unid.'].filter(Boolean).join(' · ')}</div></div><div style="display:flex;gap:6px"><button class="bsm" onclick="abrirEditarProd('${p.id}')">Editar</button><button class="bsm" style="background:var(--rp);color:var(--red)" onclick="excluirProduto('${p.id}','${p.nome.replace(/'/g,"\'").replace(/"/g,'&quot;')}')">Excluir</button></div></div>`).join('')
+    ?lista.map(p=>`<div class="item"><div><div class="inome">${p.nome}</div><div class="isub">${[p.editora,R$(p.preco),p.estoque+' unid.'].filter(Boolean).join(' · ')}</div></div><div style="display:flex;gap:6px"><button class="bsm" onclick="abrirEditarProd('${p.id}')">Editar</button><button class="bsm" style="background:var(--rp);color:var(--red)" onclick="excluirProduto('${p.id}','${p.nome.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">Excluir</button></div></div>`).join('')
     :'<div class="vazio">Nenhum produto</div>';
 }
 
@@ -938,36 +948,124 @@ async function salvarEdicao(){
   const estoque_minimo=parseInt(document.getElementById('ep-min').value)||0;
   if(!nome||isNaN(preco)){toast('Preencha nome e preço',false);return}
   const estoque=parseInt(document.getElementById('ep-estoque').value)||0;
+  // Trava duplicidade: verificar se OUTRO produto tem o mesmo nome+editora
+  const nNome=normalizar(nome), nEd=normalizar(editora);
+  const dup=produtos.find(p=>p.id!==id && normalizar(p.nome)===nNome && normalizar(p.editora||'')===nEd);
+  if(dup){
+    alert(`Existe outro produto com esse nome e editora:\n\n"${dup.nome}"${dup.editora?' ('+dup.editora+')':''}\n\nMude o nome ou editora para diferenciar.`);
+    return;
+  }
   await PATCH(`produtos?id=eq.${id}`,{nome,editora:editora||null,autor:autor||null,preco,estoque,estoque_minimo});
   fecharModal('modal-prod');toast('Produto atualizado!');
   await carregarProdutos();renderEstoque(produtos);renderAdmProd(produtos);
 }
 
-// IMPORTAR EXCEL
+// EXCLUIR PRODUTO — usa RPC pode_excluir_produto + oferece Arquivar
+async function excluirProduto(id, nome){
+  const nomeReal=String(nome).replace(/&quot;/g,'"');
+  try{
+    const info=await CALL_RPC('pode_excluir_produto',{p_produto_id:id});
+    // A função retorna um array com 1 objeto
+    const dados=Array.isArray(info)?info[0]:info;
+    const vendas=Number(dados.vendas||0);
+    const entradas=Number(dados.entradas||0);
+    const doacoes=Number(dados.doacoes||0);
+    const podeExcluir=dados.pode_excluir;
+    if(podeExcluir){
+      if(!confirm(`Excluir "${nomeReal}" definitivamente?\n\nEsta ação não pode ser desfeita.`))return;
+      await fetch(BASE+'/produtos?id=eq.'+id,{method:'DELETE',headers:H()});
+      toast('Produto excluído!');
+      await carregarProdutos();renderEstoque(produtos);renderAdmProd(produtos);carregarInicio();carregarArquivados();
+      return;
+    }
+    // Tem histórico — oferece arquivar
+    const partes=[];
+    if(vendas>0)partes.push(`${vendas} venda(s)`);
+    if(entradas>0)partes.push(`${entradas} entrada(s) de estoque`);
+    if(doacoes>0)partes.push(`${doacoes} doação(ões)`);
+    const msg=`Não é possível EXCLUIR "${nomeReal}"\n\n`+
+              `Existe(m): ${partes.join(', ')}.\n`+
+              `Excluir apagaria esse histórico.\n\n`+
+              `Deseja ARQUIVAR o produto?\nEle some das listas de venda/estoque, mas o histórico é preservado.\nVocê pode reativar em Admin → Produtos arquivados.`;
+    if(!confirm(msg))return;
+    await CALL_RPC('arquivar_produto',{p_produto_id:id});
+    toast(`"${nomeReal}" foi arquivado.`);
+    await carregarProdutos();renderEstoque(produtos);renderAdmProd(produtos);carregarInicio();carregarArquivados();
+  }catch(e){toast('Erro: '+e.message,false)}
+}
+
+// PRODUTOS ARQUIVADOS
+async function carregarArquivados(){
+  try{
+    const arq=await GET('produtos?ativo=eq.false&select=id,nome,editora,preco,estoque&order=nome');
+    const el=document.getElementById('lista-arquivados');
+    if(!arq.length){el.innerHTML='<div class="vazio">Nenhum produto arquivado</div>';return}
+    el.innerHTML=arq.map(p=>`
+      <div class="item">
+        <div><div class="inome">${p.nome}</div><div class="isub">${[p.editora,R$(p.preco),p.estoque+' unid.'].filter(Boolean).join(' · ')}</div></div>
+        <button class="bsm-v" onclick="reativarProduto('${p.id}','${p.nome.replace(/'/g,"\\'")}')">↻ Reativar</button>
+      </div>`).join('');
+  }catch(e){console.error(e)}
+}
+
+async function reativarProduto(id,nome){
+  if(!confirm(`Reativar "${nome}"?\n\nEle volta a aparecer nas listas de venda e estoque.`))return;
+  try{
+    await CALL_RPC('reativar_produto',{p_produto_id:id});
+    toast(`"${nome}" reativado!`);
+    await carregarProdutos();renderEstoque(produtos);renderAdmProd(produtos);carregarInicio();carregarArquivados();
+  }catch(e){toast('Erro: '+e.message,false)}
+}
+
+// ESTORNAR ENTRADA DE ESTOQUE
+async function carregarEntradasCancelar(){
+  try{
+    const l=await GET('entradas_estoque?select=id,quantidade,valor_total,observacao,criado_em,produto_id,produtos(nome,editora)&order=criado_em.desc&limit=30');
+    const el=document.getElementById('lista-entradas-cancel');
+    if(!l.length){el.innerHTML='<div class="vazio">Nenhuma entrada registrada</div>';return}
+    el.innerHTML=l.map(e=>`
+      <div class="item" style="flex-direction:column;align-items:flex-start;gap:6px">
+        <div style="display:flex;justify-content:space-between;width:100%;align-items:flex-start">
+          <div style="flex:1">
+            <div style="font-weight:500;font-size:13px">${e.produtos?.nome||'?'}${e.produtos?.editora?' ('+e.produtos.editora+')':''}</div>
+            <div style="font-size:12px;color:var(--tx2)">+${e.quantidade} unid. · ${dtF(e.criado_em)}${e.valor_total?' · '+R$(e.valor_total):''}${e.observacao?' · '+e.observacao:''}</div>
+          </div>
+          <button class="bsm" style="background:var(--rp);color:var(--red)" onclick="estornarEntrada('${e.id}','${e.produto_id}',${e.quantidade},'${(e.produtos?.nome||'').replace(/'/g,"\\'")}')">Estornar</button>
+        </div>
+      </div>`).join('');
+  }catch(e){console.error(e)}
+}
+
+async function estornarEntrada(entradaId,produtoId,qtd,nomeProd){
+  if(!confirm(`Estornar entrada de ${qtd} unid. de "${nomeProd}"?\n\nO registro será apagado e ${qtd} serão descontadas do estoque.\n\nEssa ação não pode ser desfeita.`))return;
+  try{
+    const p=await GET('produtos?id=eq.'+produtoId+'&select=estoque');
+    const estAtual=p[0]?.estoque||0;
+    // Estorna primeiro (delete) — se falhar, não mexemos no estoque
+    const r=await fetch(BASE+'/entradas_estoque?id=eq.'+entradaId,{method:'DELETE',headers:H()});
+    if(!r.ok)throw new Error('Não foi possível apagar o registro da entrada');
+    await PATCH(`produtos?id=eq.${produtoId}`,{estoque:estAtual-qtd});
+    toast(`Entrada estornada. Estoque agora: ${estAtual-qtd}`);
+    await carregarProdutos();renderEstoque(produtos);renderAdmProd(produtos);carregarInicio();carregarEntradasCancelar();
+  }catch(e){toast('Erro: '+e.message,false)}
+}
+
+// IMPORTAR EXCEL — separa novos vs duplicados e oferece "somar estoque"
 function lerExcel(input){
   const file=input.files[0];if(!file)return;
   const reader=new FileReader();
   reader.onload=function(e){
     const wb=XLSX.read(e.target.result,{type:'binary',cellFormula:false,cellNF:false});
-    // Tenta aba "Estoque" primeiro, senão usa a primeira aba
     const abaEstoque=wb.SheetNames.find(n=>n.toLowerCase()==='estoque');
     const ws=wb.Sheets[abaEstoque||wb.SheetNames[0]];
     const dados=XLSX.utils.sheet_to_json(ws,{defval:''});
     excelPreview=dados.map(r=>{
-      // Suporte ao formato FEJAC: Descricao, Editora, Saldo, Preco de Venda
-      // E formato generico: nome, editora, autor, categoria, preco, estoque
-      const nome=String(
-        r['Descrição']||r['Descricao']||r['DESCRIÇÃO']||
-        r.nome||r.Nome||r.NOME||''
-      ).trim();
+      const nome=String(r['Descrição']||r['Descricao']||r['DESCRIÇÃO']||r.nome||r.Nome||r.NOME||'').trim();
       const editora=String(r['Editora']||r['EDITORA']||r.editora||'').trim();
       const autor=String(r['Autor']||r['AUTOR']||r.autor||'').trim();
       const categoria=String(r['Categoria']||r['CATEGORIA']||r.categoria||'').trim();
-      // Preco: usa "Preco de Venda" se disponivel
-      const precoRaw=r['Preço de Venda']||r['Preco de Venda']||r['PREÇO DE VENDA']||
-                     r.preco||r.Preco||r['preço']||r.PRECO||0;
+      const precoRaw=r['Preço de Venda']||r['Preco de Venda']||r['PREÇO DE VENDA']||r.preco||r.Preco||r['preço']||r.PRECO||0;
       const preco=typeof precoRaw==='number'?precoRaw:(parseFloat(String(precoRaw).replace(',','.'))||0);
-      // Estoque: usa "Saldo" se disponivel — mantém negativos como vieram
       const estoqueRaw=r['Saldo']||r['SALDO']||r.estoque||r.Estoque||r.ESTOQUE||r.quantidade||r.Quantidade||0;
       const estoque=typeof estoqueRaw==='number'?estoqueRaw:(parseInt(String(estoqueRaw))||0);
       const estoque_minimo=parseInt(r.estoque_minimo||r['Estoque Mínimo']||r.minimo||0)||0;
@@ -980,43 +1078,88 @@ function lerExcel(input){
 
 function mostrarPreview(){
   const div=document.getElementById('preview-excel');
-  // Verificar duplicatas com estoque atual
-  const novos=excelPreview.filter(r=>!produtos.find(p=>p.nome.toLowerCase()===r.nome.toLowerCase()&&(p.editora||'').toLowerCase()===(r.editora||'').toLowerCase()));
-  const dups=excelPreview.length-novos.length;
+  // Classifica cada linha em NOVO ou DUPLICADO
+  excelPreview.forEach((r,idx)=>{
+    const nNome=normalizar(r.nome), nEd=normalizar(r.editora);
+    const dup=produtos.find(p=>normalizar(p.nome)===nNome && normalizar(p.editora||'')===nEd);
+    r._idx=idx;
+    r._dup=dup||null;
+    r._acao=dup?'somar':'criar'; // duplicados vêm marcados como "somar" por padrão
+  });
+  const novos=excelPreview.filter(r=>!r._dup);
+  const dups=excelPreview.filter(r=>r._dup);
   if(!excelPreview.length){div.innerHTML='<div class="vazio">Nenhum produto encontrado.</div>';return}
-  div.innerHTML=`
-    <div style="margin-top:12px;padding:10px;background:var(--vp);border-radius:8px;font-size:13px;color:var(--vd);font-weight:600">${novos.length} produto(s) para importar${dups?` · ${dups} duplicata(s) ignorada(s)`:''}</div>
-    <div style="margin-top:8px;max-height:180px;overflow-y:auto">
-      ${novos.slice(0,5).map(p=>`<div class="item"><div><div class="inome">${p.nome}</div><div class="isub">${[p.editora,R$(p.preco),p.estoque+' unid.'].filter(Boolean).join(' · ')}</div></div></div>`).join('')}
-      ${novos.length>5?`<div style="padding:8px;font-size:12px;color:var(--tx2);text-align:center">...e mais ${novos.length-5} produto(s)</div>`:''}
-    </div>`;
-  document.getElementById('btn-importar').style.display=novos.length?'block':'none';
-  // Salvar apenas os não duplicados
-  excelPreview=novos;
+  let html=`<div style="margin-top:12px;padding:10px;background:var(--vp);border-radius:8px;font-size:13px;color:var(--vd);font-weight:600">
+    ${novos.length} novo(s) · ${dups.length} duplicado(s)
+  </div>`;
+  if(novos.length){
+    html+=`<div style="margin-top:10px"><div style="font-size:12px;font-weight:600;color:var(--tx2);margin-bottom:6px">NOVOS (serão criados)</div>`;
+    novos.forEach(r=>{
+      html+=`<div class="item-import">
+        <input type="checkbox" id="imp-${r._idx}" checked onchange="excelPreview[${r._idx}]._acao=this.checked?'criar':'ignorar'">
+        <div style="flex:1"><div style="font-weight:500">${r.nome}${r.editora?' ('+r.editora+')':''}</div>
+        <div style="font-size:11px;color:var(--tx2)">${R$(r.preco)} · ${r.estoque} unid. <span class="chip chip-novo">NOVO</span></div></div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+  if(dups.length){
+    html+=`<div style="margin-top:12px"><div style="font-size:12px;font-weight:600;color:var(--tx2);margin-bottom:6px">DUPLICADOS (já cadastrados — escolha o que fazer)</div>`;
+    dups.forEach(r=>{
+      html+=`<div class="item-import">
+        <div style="flex:1"><div style="font-weight:500">${r.nome}${r.editora?' ('+r.editora+')':''}</div>
+        <div style="font-size:11px;color:var(--tx2)">
+          Cadastrado: ${R$(r._dup.preco)} · ${r._dup.estoque} unid. <span class="chip chip-dup">DUP</span><br>
+          Planilha: +${r.estoque} unid.
+        </div>
+        <div style="margin-top:6px"><select onchange="excelPreview[${r._idx}]._acao=this.value" style="font-size:12px;padding:4px 6px;border-radius:6px;border:1px solid var(--bor)">
+          <option value="somar" selected>➕ Somar +${r.estoque} ao estoque</option>
+          <option value="ignorar">✗ Ignorar (não fazer nada)</option>
+        </select></div></div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+  div.innerHTML=html;
+  document.getElementById('btn-importar').style.display=excelPreview.length?'block':'none';
 }
 
 async function importarProdutos(){
   if(!excelPreview.length)return;
-  let ok=0,err=0;
+  let criados=0, somados=0, ignorados=0, err=0;
   toast('Importando... ⏳');
-  for(const p of excelPreview){
+  for(const r of excelPreview){
     try{
-      await POST('produtos',{nome:p.nome,editora:p.editora||null,autor:p.autor||null,categoria:p.categoria||null,preco:p.preco,estoque:p.estoque,estoque_minimo:p.estoque_minimo});
-      ok++;
-    }catch(e){err++;console.error(p.nome,e)}
+      if(r._acao==='criar'){
+        const novo=await POST('produtos',{nome:r.nome,editora:r.editora||null,autor:r.autor||null,categoria:r.categoria||null,preco:r.preco,estoque:r.estoque,estoque_minimo:r.estoque_minimo},true);
+        // Se estoque > 0, criar entrada_estoque
+        if(r.estoque>0){
+          const novoId=Array.isArray(novo)?novo[0]?.id:novo?.id;
+          if(novoId){
+            await POST('entradas_estoque',{produto_id:novoId,quantidade:r.estoque,valor_total:r.preco*r.estoque||null,observacao:'Import Excel',usuario_id:EU.id});
+          }
+        }
+        criados++;
+      } else if(r._acao==='somar'){
+        const novoEstoque=(r._dup.estoque||0)+r.estoque;
+        await PATCH(`produtos?id=eq.${r._dup.id}`,{estoque:novoEstoque});
+        await POST('entradas_estoque',{produto_id:r._dup.id,quantidade:r.estoque,valor_total:r.preco*r.estoque||null,observacao:'Import Excel (somado a existente)',usuario_id:EU.id});
+        somados++;
+      } else {
+        ignorados++;
+      }
+    }catch(e){err++;console.error(r.nome,e)}
   }
-  toast(`Importados: ${ok} ✓${err?` | Erros: ${err}`:''}`);
+  toast(`Criados: ${criados} · Somados: ${somados} · Ignorados: ${ignorados}${err?' · Erros: '+err:''}`);
   excelPreview=[];
   document.getElementById('preview-excel').innerHTML='';
   document.getElementById('btn-importar').style.display='none';
   document.getElementById('inp-excel').value='';
-  await carregarProdutos();renderEstoque(produtos);renderAdmProd(produtos);carregarInicio();
+  await carregarProdutos();renderEstoque(produtos);renderAdmProd(produtos);carregarInicio();carregarEntradasCancelar();
 }
 
-// PING automático para manter Supabase ativo (evita pausa por inatividade)
-async function pingSupabase(){
-  try{ await GET('usuarios?select=id&limit=1'); }catch(e){}
-}
+// PING
+async function pingSupabase(){try{await GET('usuarios?select=id&limit=1');}catch(e){}}
 pingSupabase();
 setInterval(pingSupabase, 1000*60*60*24*4);
 
@@ -1093,8 +1236,6 @@ async function gerarGraficos(){
   try{
     const vendas=await GET(`vendas?created_em=gte.${iniUTC.toISOString()}&created_em=lte.${fimUTC.toISOString()}&select=id,total,created_em,forma_pagamento,itens_venda(quantidade,subtotal,produtos(nome))`);
     if(!vendas.length){document.getElementById('area-graficos').innerHTML='<div class="card"><div class="vazio">Nenhuma venda no período</div></div>';return}
-
-    // Agrupar por mês
     const porMes={};
     vendas.forEach(v=>{
       const mes=new Date(v.created_em).toLocaleDateString('pt-BR',{month:'short',year:'2-digit'});
@@ -1107,8 +1248,6 @@ async function gerarGraficos(){
     const totais=meses.map(m=>porMes[m].total);
     const dinheiros=meses.map(m=>porMes[m].dinheiro);
     const pixs=meses.map(m=>porMes[m].pix);
-
-    // Top produtos
     const mapaProd={};
     vendas.forEach(v=>v.itens_venda?.forEach(i=>{
       const n=i.produtos?.nome||'?';
@@ -1116,11 +1255,9 @@ async function gerarGraficos(){
       mapaProd[n].qty+=i.quantidade;mapaProd[n].total+=Number(i.subtotal);
     }));
     const topProd=Object.entries(mapaProd).sort((a,b)=>b[1].qty-a[1].qty).slice(0,8);
-
     const totalGeral=vendas.reduce((s,v)=>s+Number(v.total),0);
     const totalDin=vendas.filter(v=>v.forma_pagamento==='dinheiro').reduce((s,v)=>s+Number(v.total),0);
     const totalPix=vendas.filter(v=>v.forma_pagamento==='pix').reduce((s,v)=>s+Number(v.total),0);
-
     document.getElementById('area-graficos').innerHTML=`
       <div class="card" style="text-align:center;background:linear-gradient(135deg,var(--vd),var(--vc));">
         <div style="color:#fff;font-size:13px;opacity:.8">Total do período</div>
@@ -1131,53 +1268,20 @@ async function gerarGraficos(){
           <div style="color:#fff"><div style="font-size:11px;opacity:.7">🛒 Vendas</div><div style="font-weight:600">${vendas.length}</div></div>
         </div>
       </div>
-      <div class="card">
-        <div class="ctit">📊 Vendas por mês</div>
-        <canvas id="chart-vendas" height="200"></canvas>
-      </div>
-      <div class="card">
-        <div class="ctit">💰 Dinheiro x Pix por mês</div>
-        <canvas id="chart-pgto" height="200"></canvas>
-      </div>
-      <div class="card">
-        <div class="ctit">📚 Produtos mais vendidos</div>
-        <canvas id="chart-prod" height="250"></canvas>
-      </div>`;
-
-    // Destruir charts anteriores
+      <div class="card"><div class="ctit">📊 Vendas por mês</div><canvas id="chart-vendas" height="200"></canvas></div>
+      <div class="card"><div class="ctit">💰 Dinheiro x Pix por mês</div><canvas id="chart-pgto" height="200"></canvas></div>
+      <div class="card"><div class="ctit">📚 Produtos mais vendidos</div><canvas id="chart-prod" height="250"></canvas></div>`;
     if(chartVendas)chartVendas.destroy();
     if(chartPgto)chartPgto.destroy();
     if(chartProd)chartProd.destroy();
-
     const opts={responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{callback:v=>'R$'+v}}}};
-
-    chartVendas=new Chart(document.getElementById('chart-vendas'),{
-      type:'bar',
-      data:{labels:meses,datasets:[{label:'Total',data:totais,backgroundColor:'#2d6a4f',borderRadius:6}]},
-      options:{...opts,plugins:{legend:{display:false}}}
-    });
-
-    chartPgto=new Chart(document.getElementById('chart-pgto'),{
-      type:'bar',
-      data:{labels:meses,datasets:[
-        {label:'Dinheiro',data:dinheiros,backgroundColor:'#40916c',borderRadius:4},
-        {label:'Pix',data:pixs,backgroundColor:'#2563eb',borderRadius:4}
-      ]},
-      options:{responsive:true,scales:{y:{beginAtZero:true,ticks:{callback:v=>'R$'+v}}},plugins:{legend:{position:'bottom'}}}
-    });
-
-    chartProd=new Chart(document.getElementById('chart-prod'),{
-      type:'bar',
-      data:{labels:topProd.map(([n])=>n.length>25?n.slice(0,25)+'…':n),datasets:[{label:'Unidades',data:topProd.map(([,d])=>d.qty),backgroundColor:'#f4a261',borderRadius:4}]},
-      options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true}}}
-    });
-
+    chartVendas=new Chart(document.getElementById('chart-vendas'),{type:'bar',data:{labels:meses,datasets:[{label:'Total',data:totais,backgroundColor:'#2d6a4f',borderRadius:6}]},options:{...opts,plugins:{legend:{display:false}}}});
+    chartPgto=new Chart(document.getElementById('chart-pgto'),{type:'bar',data:{labels:meses,datasets:[{label:'Dinheiro',data:dinheiros,backgroundColor:'#40916c',borderRadius:4},{label:'Pix',data:pixs,backgroundColor:'#2563eb',borderRadius:4}]},options:{responsive:true,scales:{y:{beginAtZero:true,ticks:{callback:v=>'R$'+v}}},plugins:{legend:{position:'bottom'}}}});
+    chartProd=new Chart(document.getElementById('chart-prod'),{type:'bar',data:{labels:topProd.map(([n])=>n.length>25?n.slice(0,25)+'…':n),datasets:[{label:'Unidades',data:topProd.map(([,d])=>d.qty),backgroundColor:'#f4a261',borderRadius:4}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true}}}});
   }catch(e){toast('Erro: '+e.message,false)}
 }
 
-function imprimirRelatorio(){
-  window.print();
-}
+function imprimirRelatorio(){window.print();}
 
 // CANCELAR VENDA
 async function carregarVendasCancelar(){
@@ -1193,7 +1297,7 @@ async function carregarVendasCancelar(){
             <div style="font-size:14px;font-weight:600">${R$(v.total)}${v.doacao?` <span style="font-size:12px;color:var(--am)">+💝${R$(v.doacao)}</span>`:''} · <span class="badge ${v.forma_pagamento==='pix'?'bb':'bg'}">${v.forma_pagamento==='pix'?'Pix':'Dinheiro'}</span></div>
             <div style="font-size:12px;color:var(--tx2);margin-top:2px">${dtF(v.created_em)} · ${v.usuarios?.nome||'—'}${v.nome_pagante?' · '+v.nome_pagante:''}</div>
           </div>
-          <button class="bsm" style="background:var(--rp);color:var(--red)" onclick="confirmarCancelarVenda('${v.id}','${R$(v.total).replace(/'/g,"\'")}')">Cancelar</button>
+          <button class="bsm" style="background:var(--rp);color:var(--red)" onclick="confirmarCancelarVenda('${v.id}','${R$(v.total).replace(/'/g,"\\'")}')">Cancelar</button>
         </div>
         <div style="font-size:12px;color:var(--tx2)">${v.itens_venda?.map(i=>`${i.produtos?.nome||'?'} ×${i.quantidade}`).join(' · ')||''}</div>
       </div>`).join('');
@@ -1229,7 +1333,6 @@ async function salvarEncomenda(){
     toast('Encomenda registrada!');
     ['enc-cliente','enc-livro','enc-telefone','enc-obs'].forEach(id=>document.getElementById(id).value='');
     carregarEncomendas();
-    // Oferecer envio por WhatsApp
     enviarEncomendaWhatsApp(cliente,livro,telefone,obs);
   }catch(e){toast('Erro: '+e.message,false)}
 }
@@ -1325,24 +1428,10 @@ async function registrarDoacaoLivro(){
   }catch(e){toast('Erro: '+e.message,false)}
 }
 
-// EXCLUIR PRODUTO
-async function excluirProduto(id, nome){
-  if(!confirm('Excluir "'+nome+'"?\nEsta ação não pode ser desfeita.'))return;
-  try{
-    const itens=await GET('itens_venda?produto_id=eq.'+id+'&select=id&limit=1');
-    if(itens.length){toast('Não é possível excluir — produto tem vendas registradas.',false);return;}
-    const entradas=await GET('entradas_estoque?produto_id=eq.'+id+'&select=id&limit=1');
-    if(entradas.length){toast('Não é possível excluir — produto tem entradas registradas.',false);return;}
-    await fetch(BASE+'/produtos?id=eq.'+id,{method:'DELETE',headers:H()});
-    toast('Produto excluído!');
-    await carregarProdutos();renderEstoque(produtos);renderAdmProd(produtos);carregarInicio();
-  }catch(e){toast('Erro: '+e.message,false)}
-}
-
 // INVENTÁRIO EXCEL
 async function exportarInventario(){
   toast('Gerando inventário...');
-  const lista=await GET('produtos?select=nome,editora,autor,categoria,preco,estoque&order=nome');
+  const lista=await GET('produtos?ativo=eq.true&select=nome,editora,autor,categoria,preco,estoque&order=nome');
   const dados=lista.map(p=>({
     'Nome':p.nome,
     'Editora':p.editora||'',
@@ -1354,16 +1443,12 @@ async function exportarInventario(){
     'Diferença':''
   }));
   const ws=XLSX.utils.json_to_sheet(dados);
-  // Larguras das colunas
   ws['!cols']=[{wch:40},{wch:15},{wch:20},{wch:20},{wch:10},{wch:15},{wch:15},{wch:12}];
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,'Inventário');
   XLSX.writeFile(wb,`Inventario_Livraria_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.xlsx`);
   toast('Inventário exportado!');
 }
-
-// Estender iniciarAdmin para mostrar botão inventário
-const _iniciarAdminOrig=iniciarAdmin;
 </script>
 </body>
 </html>
