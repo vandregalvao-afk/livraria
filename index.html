@@ -128,7 +128,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 }
 </style>
 
-<link rel="manifest" href="data:application/json,{%22name%22:%22Livraria%20Andr%C3%A9%20Luiz%20-%20FEJAC%22,%22short_name%22:%22Livraria%20FEJAC%22,%22display%22:%22standalone%22,%22background_color%22:%22%231b4332%22,%22theme_color%22:%22%231b4332%22,%22icons%22:[{%22src%22:%22android-chrome-192x192.png%22,%22sizes%22:%22192x192%22,%22type%22:%22image/png%22},{%22src%22:%22android-chrome-512x512.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22}]}">
+<link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Livraria FEJAC">
@@ -1167,6 +1167,13 @@ async function importarProdutos(){
 async function pingSupabase(){try{await GET('usuarios?select=id&limit=1');}catch(e){}}
 pingSupabase();
 setInterval(pingSupabase, 1000*60*60*24*4);
+
+// Registra Service Worker para o Chrome oferecer "Instalar app" (PWA real)
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('sw.js').catch(err=>console.log('SW erro:',err));
+  });
+}
 
 carregarUsuarios();
 </script>
